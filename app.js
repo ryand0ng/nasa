@@ -8,11 +8,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-
-app.get('/', async (req, res) => {
+let collection;
+(async() => {
     const client = new MongoClient(uri);
     await client.connect();
-    let collection = client.db(process.env.MONGO_DB_NAME).collection(process.env.MONGO_COLLECTION);
+    collection = client.db(process.env.MONGO_DB_NAME).collection(process.env.MONGO_COLLECTION);
+})();
+
+app.get('/', async (req, res) => {
     const response = await fetch(
         `https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`
     );
@@ -22,9 +25,6 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/comment', async (req, res) => {
-    const client = new MongoClient(uri);
-    await client.connect();
-    let collection = client.db(process.env.MONGO_DB_NAME).collection(process.env.MONGO_COLLECTION);
     const text = req.body.text;
     const comment = { text: text, date: new Date() };
     await collection.insertOne(comment);
