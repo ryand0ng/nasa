@@ -16,19 +16,23 @@ let collection;
 })();
 
 app.get('/', async (req, res) => {
-    const response = await fetch(
-        `https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`
-    );
-    const data = await response.json();
-    const comments = await collection.find().toArray();
-    res.render('index', { apod: data, comments: comments });
+    if (collection) {
+        const response = await fetch(
+            `https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`
+        );
+        const data = await response.json();
+        const comments = await collection.find().toArray();
+        res.render('index', { apod: data, comments: comments });
+    }
 });
 
 app.post('/comment', async (req, res) => {
-    const text = req.body.text;
-    const comment = { text: text, date: new Date() };
-    await collection.insertOne(comment);
-    res.redirect('/');
+    if (collection) {
+        const text = req.body.text;
+        const comment = { text: text, date: new Date() };
+        await collection.insertOne(comment);
+        res.redirect('/');
+    }
 });
 
 app.listen(3000, () => {
