@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NASA APOD</title>
+    <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+    <h1>NASA Astronomy Picture of the Day</h1>
+    <% if (apod.media_type === 'image') { %>
+    <img src="<%= apod.url %>" alt="apod" />
+    <% } else if (apod.media_type === 'video') { %>
+    <iframe src="<%= apod.url %>" frameborder="0" allowfullscreen></iframe>
+    <% } %>
+    <h2><%= apod.title %></h2>
+    <p><%= apod.explanation %></p>
+    <h2>Comments</h2>
+    <ul>
+        <% comments.forEach(function(comment) { %>
+            <li>
+                <strong><%= comment.date.toLocaleString() %>:</strong>
+                <%= comment.text %>
+            </li>
+        <% }); %>
+    </ul>
+    <h2>Add a Comment</h2>
+    <form action="/comment" method="post">
+        <textarea name="text" required></textarea><br />
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
